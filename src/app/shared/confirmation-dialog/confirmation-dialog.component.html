@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>{{GLOBAL_CONSTANTS.CONFIRMATION_DIALOG.CONFIRM_TITLE}}</h2>
+<mat-dialog-content>
+  <p>{{ data.message }}</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">
+    {{GLOBAL_CONSTANTS.CONFIRMATION_DIALOG.CANCEL_BUTTON_LABEL}}
+  </button>
+  <button mat-button color="warn" (click)="onConfirm()">
+    {{GLOBAL_CONSTANTS.CONFIRMATION_DIALOG.DELETE_BUTTON_LABEL}}
+  </button>
+</mat-dialog-actions>

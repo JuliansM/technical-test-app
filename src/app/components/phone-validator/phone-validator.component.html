@@ -1,0 +1,103 @@
+<div class="phone-validator">
+  <mat-card class="phone-validator__form-card">
+    <mat-card-header>
+      <mat-card-title>{{ GLOBAL_CONSTANTS.FORM.TITLE }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="validateForm" (ngSubmit)="validate()" class="phone-validator__form">
+        <mat-form-field class="phone-validator__field">
+          <label>{{ GLOBAL_CONSTANTS.FORM.COUNTRY_CODE_LABEL }}</label>
+          <input matInput formControlName="countryCode" [placeholder]="GLOBAL_CONSTANTS.FORM.COUNTRY_CODE_PLACEHOLDER">
+
+          @if (validateForm.get('countryCode')?.errors?.[GLOBAL_CONSTANTS.FORM.REQUIRED_VALUE]) {
+            <mat-error>
+              {{ GLOBAL_CONSTANTS.FORM.COUNTRY_CODE_REQUIRED_ERROR }}
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field class="phone-validator__field">
+          <label>{{ GLOBAL_CONSTANTS.FORM.PHONE_NUMBER_LABEL }}</label>
+          <input matInput formControlName="phoneNumber" [placeholder]="GLOBAL_CONSTANTS.FORM.PHONE_NUMBER_PLACEHOLDER">
+
+          @if (validateForm.get('phoneNumber')?.errors?.[GLOBAL_CONSTANTS.FORM.REQUIRED_VALUE]) {
+            <mat-error>
+              {{ GLOBAL_CONSTANTS.FORM.PHONE_NUMBER_REQUIRED_ERROR }}
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <div class="phone-validator__actions">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="validateForm.invalid || loading">
+            {{ loading ? GLOBAL_CONSTANTS.FORM.SUBMIT_BUTTON_LOADING : GLOBAL_CONSTANTS.FORM.SUBMIT_BUTTON }}
+          </button>
+        </div>
+
+        @if (error) {
+          <mat-error class="phone-validator__error">
+            {{ GLOBAL_CONSTANTS.FORM.VALIDATION_ERROR }}
+          </mat-error>
+        }
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="phone-validator__history">
+    <div class="phone-validator__history-header">
+      <h2>{{ GLOBAL_CONSTANTS.HISTORY.TITLE }}</h2>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="clearHistory()"
+        [disabled]="!phoneService.validationHistory().length">
+        {{ GLOBAL_CONSTANTS.HISTORY.CLEAR_BUTTON }}
+      </button>
+    </div>
+
+    @if (paginatedHistory().length) {
+      @for (validation of paginatedHistory(); track validation.id) {
+        <mat-card class="phone-validator__history-item"
+                  [ngClass]="{'phone-validator__history-item--valid': validation.valid}">
+          <mat-card-content>
+            <div class="phone-validator__history-item-content">
+              <div>
+                <p><strong>{{ GLOBAL_CONSTANTS.HISTORY.NUMBER_LABEL }}</strong> {{ validation.international_format }}
+                </p>
+                <p><strong>{{ GLOBAL_CONSTANTS.HISTORY.COUNTRY_LABEL }}</strong> {{ validation.country_name }}</p>
+                <p><strong>{{ GLOBAL_CONSTANTS.HISTORY.CARRIER_LABEL }}</strong> {{ validation.carrier }}</p>
+                <p>
+                  <strong>{{ GLOBAL_CONSTANTS.HISTORY.VALID_LABEL }}</strong> {{
+                    validation.valid ?
+                      GLOBAL_CONSTANTS.HISTORY.VALID_YES : GLOBAL_CONSTANTS.HISTORY.VALID_NO
+                  }}
+                </p>
+              </div>
+              <button mat-icon-button color="warn" (click)="deleteValidation(validation.id!)">
+                <mat-icon>{{ GLOBAL_CONSTANTS.HISTORY.DELETE_BUTTON_ICON }}</mat-icon>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <mat-paginator
+        [length]="phoneService.validationHistory().length"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    } @else {
+      <mat-card class="phone-validator__empty">
+        <mat-card-content>
+          {{ GLOBAL_CONSTANTS.HISTORY.NO_HISTORY }}
+        </mat-card-content>
+      </mat-card>
+    }
+
+  </div>
+</div>
